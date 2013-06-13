@@ -22,9 +22,8 @@ class DatasetEditsController < ApplicationController
   def submit
     @dataset_edit.submitted = true
     if @dataset_edit.update_attributes(params[:dataset_edit])
-      result = "Submitted to dataset edit log. "
-      result << @dataset_edit.notify(params).to_s
-      flash[:notice] = result
+      @dataset_edit.notify(params)
+      flash[:notice] = "Notifications were successfully submitted and sent, Thanks!"
     else
       flash[:error] = @dataset_edit.errors.to_sentence
     end
