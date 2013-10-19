@@ -17,6 +17,8 @@ gem 'pg_search'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'will_paginate'
+gem 'dalli'
+gem 'cache_digests'
 
 # group :production do
   # gem 'newrelic_rpm'

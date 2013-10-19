@@ -87,48 +87,50 @@
 
   - unless @datacolumns.empty?
     %h3 Data columns available in the raw data part of this dataset
-    - @datacolumns.each do |column|
-      .span-4.dataset_columns{:class => cycle('border', 'last', :name => 'display_in_columns')}
-        .columnheader= column.columnheader
-        = column.definition
-        - unless column.unit.blank?
-          %br
-          %i
-            Unit:
-            = column.unit
-        %br
-        %i
-          Data group:
-          - if column.datagroup_id
-            = link_to_if current_user, column.datagroup.title, column.datagroup
-          - else
-            Not specified
-        - unless column.tags.empty?
-          %br
-          %i
-            Keywords:
-            = raw column.tags.map{|t| link_to t.name, keyword_path(t.id)}.join(", ")
-        - if column.values_stored?
-          %table.import_values
-            %tr
-              %th.span-4.last= "Values"
-            - column.accepted_values(5).shuffle.each do |sc|
-              %tr
-                %td.span-4.last{:class => cycle('even', 'odd')} #{sc.accepted_value}
-        - else
-          %br
-          = image_tag 'alert.png'
-          - if @dataset.can_edit_by? current_user
-            This column needs to be approved to display sample values. Click
-            = link_to 'here', approval_overview_datacolumn_path(column)
-            to start approving.
-          - else
-            Sample values are not displayed because this column hasn't been approved yet.
-
-        - u = column.users
-        - unless u.blank? && column.acknowledge_unknown.blank?
-          %div
-            *
+    - cache [@dataset, 'columns'] do
+      - @datacolumns.each do |column|
+        - cache column do
+          .span-4.dataset_columns{:class => cycle('border', 'last', :name => 'display_in_columns')}
+            .columnheader= column.columnheader
+            = column.definition
+            - unless column.unit.blank?
+              %br
+              %i
+                Unit:
+                = column.unit
+            %br
             %i
-              = (u.map{|p| link_to(p.short_name, p)} + [column.acknowledge_unknown]).compact.join(', ').html_safe
-            also contributed to this column.
+              Data group:
+              - if column.datagroup_id
+                = link_to_if current_user, column.datagroup.title, column.datagroup
+              - else
+                Not specified
+            - unless column.tags.empty?
+              %br
+              %i
+                Keywords:
+                = raw column.tags.map{|t| link_to t.name, keyword_path(t.id)}.join(", ")
+            - if column.values_stored?
+              %table.import_values
+                %tr
+                  %th.span-4.last= "Values"
+                - column.accepted_values(5).shuffle.each do |sc|
+                  %tr
+                    %td.span-4.last{:class => cycle('even', 'odd')} #{sc.accepted_value}
+            - else
+              %br
+              = image_tag 'alert.png'
+              - if @dataset.can_edit_by? current_user
+                This column needs to be approved to display sample values. Click
+                = link_to 'here', approval_overview_datacolumn_path(column)
+                to start approving.
+              - else
+                Sample values are not displayed because this column hasn't been approved yet.
+
+            - u = column.users
+            - unless u.blank? && column.acknowledge_unknown.blank?
+              %div
+                *
+                %i
+                  = (u.map{|p| link_to(p.short_name, p)} + [column.acknowledge_unknown]).compact.join(', ').html_safe
+                also contributed to this column.

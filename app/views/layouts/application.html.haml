@@ -10,7 +10,7 @@
     = csrf_meta_tags
     = render :partial => "pages/#{LayoutHelper::BEF_LAYOUT}/head"
   %body
-    - unless Rails.env == 'production'
+    - unless Rails.env.production?
       #rails_env_notice= "You are currently working under #{Rails.env} environment."
     .container
       #header.span-12
